@@ -51,6 +51,20 @@ async def on_message(message):
             await message.channel.send('Hello')    
         elif(str(message.author.id) == os.getenv('TWICESTAN_ID')):
             await message.channel.send('hi :3')
+        elif(str(message.author.id) == os.getenv('CHU_ID')):
+            await message.channel.send('안녕~ :3')
+        elif(str(message.author.id) == os.getenv('RACCOON_ID')):
+            await message.channel.send('racmid')
+        elif(str(message.author.id) == os.getenv('MACHI_ID')):
+            await message.channel.send('machister')
+        elif(str(message.author.id) == os.getenv('LINE_ID')):
+            await message.channel.send('whooo')
+        elif(str(message.author.id) == os.getenv('MIKU_ID')):
+            await message.channel.send('mikuster')
+        elif(str(message.author.id) == os.getenv('MISO_ID')):
+            await message.channel.send('misomer')
+        elif(str(message.author.id) == os.getenv('DAISUKI_ID')):
+            await message.channel.send('daister')
         else:    
             await message.channel.send('Hello~')
 

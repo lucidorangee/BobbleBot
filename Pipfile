@@ -7,6 +7,8 @@ name = "pypi"
 pydrive2 = "*"
 "discord.py" = "*"
 python-dotenv = "*"
+pillow = "*"
+"pillow.heif" = "*"
 
 [dev-packages]
 
