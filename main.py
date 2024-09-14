@@ -1,11 +1,15 @@
 import os
 import discord, random
+from discord.ext import commands, tasks
 import uuid
 from dotenv import load_dotenv
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 import pillow_heif
 from PIL import Image
+import asyncio
+from datetime import datetime 
+
 
 load_dotenv()
 
@@ -24,13 +28,28 @@ elif gauth.access_token_expired:
     gauth.Refresh()
 else:
     gauth.Authorize()
-#gauth.SaveCredentialsFile("driveCredentials.txt")
 
 drive = GoogleDrive(gauth)
 
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
+    msg1.start()
+
+@tasks.loop(hours=10)
+async def msg1():
+    message_channel = client.get_channel(str(os.getenv('WEEKLY_MESSAGE_CHANNEL_ID')))
+    message = await message_channel.send("testing!")
+    showPhoto(message)
+
+@msg1.before_loop
+async def before_msg1():
+    for _ in range(60*60*24):  # loop the whole day
+        if datetime.now().hour == 8+12:  # 24 hour format
+            print('It is time')
+            return
+        await asyncio.sleep(1)
+
 
 @client.event
 async def on_message(message):
@@ -45,6 +64,9 @@ async def on_message(message):
                 await uploadPhotos(message)
         else:
             await message.channel.send("This is a DM from " + str(message.author.id))
+
+    elif message.content.startswith('$time'):
+        await message.channel.send(("Current time:", datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
     elif message.content.startswith('$hello'):
         if(str(message.author.id) == os.getenv("ORANGE_ID")):
@@ -76,33 +98,36 @@ async def on_message(message):
             await message.channel.send("Only thing I show you is no mercy! :D")
             return
 
-        file_list = drive.ListFile({'q': "\'" +  os.getenv('DRIVE_FOLDER_ID') + "' in parents and trashed=false"}).GetList()
-        index = random.randint(0, len(file_list) - 1)
-        file6 = drive.CreateFile({'id': file_list[index]['id']})
-        ext = file6['title'].lower()
-        if ext.endswith('png'):
-            ext = 'png'
-            file6.GetContentFile('temp.' + ext)
-        elif ext.endswith('jpg'):
-            ext = 'jpg'
-            file6.GetContentFile('temp.' + ext)
-        elif ext.endswith('jpeg'):
-            ext = 'jpeg'
-            file6.GetContentFile('temp.' + ext)
-        elif ext.endswith('heic'):
-            pillow_heif.register_heif_opener()
-            file6.GetContentFile('temp.heic')
-            img = Image.open('temp.heic')
-            img.save('temp.png', format('png'))
-            os.remove('temp.heic')
-            ext = 'png'
-        else:
-            await message.channel.send(content='```ERROR HAS OCCURRED WHILE LOADING FILE; FILE NAME: ' + ext +'```')
-            return
-        
-        file=discord.File('temp.' + ext)
-        await message.channel.send(file=file, content='Tada! You rolled ' + str(index) + ' from 0 to ' + str(len(file_list) - 1) + "!")
-        os.remove("temp." + ext)
+        await showPhoto(message)
+
+async def showPhoto(message):
+    file_list = drive.ListFile({'q': "\'" +  os.getenv('DRIVE_FOLDER_ID') + "' in parents and trashed=false"}).GetList()
+    index = random.randint(0, len(file_list) - 1)
+    file6 = drive.CreateFile({'id': file_list[index]['id']})
+    ext = file6['title'].lower()
+    if ext.endswith('png'):
+        ext = 'png'
+        file6.GetContentFile('temp.' + ext)
+    elif ext.endswith('jpg'):
+        ext = 'jpg'
+        file6.GetContentFile('temp.' + ext)
+    elif ext.endswith('jpeg'):
+        ext = 'jpeg'
+        file6.GetContentFile('temp.' + ext)
+    elif ext.endswith('heic'):
+        pillow_heif.register_heif_opener()
+        file6.GetContentFile('temp.heic')
+        img = Image.open('temp.heic')
+        img.save('temp.png', format('png'))
+        os.remove('temp.heic')
+        ext = 'png'
+    else:
+        await message.channel.send(content='```ERROR HAS OCCURRED WHILE LOADING FILE; FILE NAME: ' + ext +'```')
+        return
+    
+    file=discord.File('temp.' + ext)
+    await message.channel.send(file=file, content='Tada! You rolled ' + str(index) + ' from 0 to ' + str(len(file_list) - 1) + "!")
+    os.remove("temp." + ext)
 
 async def uploadPhotos(message):
     if message.attachments == []:
