@@ -8,7 +8,7 @@ from pydrive2.drive import GoogleDrive
 import pillow_heif
 from PIL import Image
 import asyncio
-from datetime import datetime 
+from datetime import datetime, timezone
 
 
 load_dotenv()
@@ -45,7 +45,7 @@ async def msg1():
 @msg1.before_loop
 async def before_msg1():
     for _ in range(60*60*24):  # loop the whole day
-        if datetime.now().hour == 8+12:  # 24 hour format
+        if datetime.now(timezone.utc).hour == 11+12:  # 24 hour format
             print('It is time')
             return
         await asyncio.sleep(1)
