@@ -38,9 +38,10 @@ async def on_ready():
 
 @tasks.loop(hours=10)
 async def msg1():
-    message_channel = client.get_channel(str(os.getenv('WEEKLY_MESSAGE_CHANNEL_ID')))
-    message = await message_channel.send("testing!")
-    showPhoto(message)
+    channel_id = int(os.getenv('WEEKLY_MESSAGE_CHANNEL_ID'))
+    channel = await client.fetch_channel(channel_id)
+    message = await channel.send("testing!")
+    await showPhoto(message)
 
 @msg1.before_loop
 async def before_msg1():
