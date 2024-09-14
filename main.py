@@ -24,7 +24,7 @@ elif gauth.access_token_expired:
     gauth.Refresh()
 else:
     gauth.Authorize()
-gauth.SaveCredentialsFile("driveCredentials.txt")
+#gauth.SaveCredentialsFile("driveCredentials.txt")
 
 drive = GoogleDrive(gauth)
 
@@ -72,6 +72,10 @@ async def on_message(message):
         await uploadPhotos(message)    
     
     elif message.content.startswith('$show'):
+        if str(message.author.id) != os.getenv('TWICESTAN_ID') and str(message.author.id) != os.getenv('ORANGE_ID'):
+            await message.channel.send("Only thing I show you is no mercy! :D")
+            return
+
         file_list = drive.ListFile({'q': "\'" +  os.getenv('DRIVE_FOLDER_ID') + "' in parents and trashed=false"}).GetList()
         index = random.randint(0, len(file_list) - 1)
         file6 = drive.CreateFile({'id': file_list[index]['id']})
