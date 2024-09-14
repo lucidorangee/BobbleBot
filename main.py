@@ -4,6 +4,8 @@ import uuid
 from dotenv import load_dotenv
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
+import pillow_heif
+from PIL import Image
 
 load_dotenv()
 
@@ -25,7 +27,6 @@ else:
 gauth.SaveCredentialsFile("driveCredentials.txt")
 
 drive = GoogleDrive(gauth)
-
 
 @client.event
 async def on_ready():
@@ -63,17 +64,27 @@ async def on_message(message):
         ext = file6['title'].lower()
         if ext.endswith('png'):
             ext = 'png'
+            file6.GetContentFile('temp.' + ext)
         elif ext.endswith('jpg'):
             ext = 'jpg'
+            file6.GetContentFile('temp.' + ext)
         elif ext.endswith('jpeg'):
             ext = 'jpeg'
+            file6.GetContentFile('temp.' + ext)
+        elif ext.endswith('heic'):
+            pillow_heif.register_heif_opener()
+            file6.GetContentFile('temp.heic')
+            img = Image.open('temp.heic')
+            img.save('temp.png', format('png'))
+            os.remove('temp.heic')
+            ext = 'png'
         else:
             await message.channel.send(content='```ERROR HAS OCCURRED WHILE LOADING FILE; FILE NAME: ' + ext +'```')
             return
         
-        file6.GetContentFile('temp.' + ext)
         file=discord.File('temp.' + ext)
         await message.channel.send(file=file, content='Tada! You rolled ' + str(index) + ' from 0 to ' + str(len(file_list) - 1) + "!")
+        os.remove("temp." + ext)
 
 async def uploadPhotos(message):
     if message.attachments == []:
@@ -88,6 +99,8 @@ async def uploadPhotos(message):
             ext = "jpg"
         elif attachment.filename.lower().endswith('jpeg'):
             ext = "jpeg"
+        elif attachment.filename.lower().endswith('heic'):
+            ext = "heic"
         else:
             await message.channel.send("the url is " + str(attachment.filename.lower()))
             continue
@@ -111,6 +124,7 @@ async def uploadPhotos(message):
         file = drive.CreateFile(metadata)
         file.SetContentFile("temp." + ext)
         file.Upload()
+        os.remove("temp." + ext)
         await message.channel.send('Uploaded!')
 
 client.run(os.getenv('TOKEN_ID'))
