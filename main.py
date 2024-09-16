@@ -36,20 +36,20 @@ async def on_ready():
     print(f'We have logged in as {client.user}')
     msg1.start()
 
-@tasks.loop(hours=10)
+@tasks.loop(hours=168)
 async def msg1():
     channel_id = int(os.getenv('WEEKLY_MESSAGE_CHANNEL_ID'))
     channel = await client.fetch_channel(channel_id)
-    message = await channel.send("testing!")
+    message = await channel.send("Weekly Bubble!")
     await showPhoto(message)
 
 @msg1.before_loop
 async def before_msg1():
-    for _ in range(60*60*24):  # loop the whole day
-        if datetime.now(timezone.utc).hour == 11+12:  # 24 hour format
+    for _ in range( (60*60*24*7) // 30):  # loop the whole day
+        if datetime.today().weekday() == 3 and datetime.now(timezone.utc).hour == 4 and datetime.now(timezone.utc).minute == 44:  # 24 hour format
             print('It is time')
             return
-        await asyncio.sleep(1)
+        await asyncio.sleep(30)
 
 
 @client.event
@@ -77,24 +77,27 @@ async def on_message(message):
         elif(str(message.author.id) == os.getenv('CHU_ID')):
             await message.channel.send('안녕~ :3')
         elif(str(message.author.id) == os.getenv('RACCOON_ID')):
-            await message.channel.send('racmid')
+            await message.channel.send('Hi racmid...')
         elif(str(message.author.id) == os.getenv('MACHI_ID')):
-            await message.channel.send('machister')
+            await message.channel.send('Machister!')
         elif(str(message.author.id) == os.getenv('LINE_ID')):
-            await message.channel.send('whooo')
+            await message.channel.send('Whooo?')
         elif(str(message.author.id) == os.getenv('MIKU_ID')):
-            await message.channel.send('mikuster')
+            await message.channel.send('Mikuster!')
         elif(str(message.author.id) == os.getenv('MISO_ID')):
-            await message.channel.send('misomer')
+            await message.channel.send('Misomer~')
         elif(str(message.author.id) == os.getenv('DAISUKI_ID')):
-            await message.channel.send('daister')
+            await message.channel.send('Daister~')
         else:    
             await message.channel.send('Hello~')
 
     elif message.content.startswith('$upload'):
-        await uploadPhotos(message)    
+        if(str(message.author.id) == os.getenv('TWICESTAN_ID')):
+            await uploadPhotos(message)
+        else:
+            await message.channel.send('Sorry, my drive is only for Bubble :c')
     
-    elif message.content.startswith('$show'):
+    elif message.content.startswith('$random'):
         if str(message.author.id) != os.getenv('TWICESTAN_ID') and str(message.author.id) != os.getenv('ORANGE_ID'):
             await message.channel.send("Only thing I show you is no mercy! :D")
             return
