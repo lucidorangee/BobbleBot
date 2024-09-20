@@ -36,7 +36,7 @@ async def on_ready():
     print(f'We have logged in as {client.user}')
     channel = client.get_channel(350530297944735747)
     channel2 = client.get_channel(int(os.getenv('WEEKLY_MESSAGE_CHANNEL_ID')))
-    await channel.send(f"Channel Check: loc at {channel2.jump_url}, and name is {channel2.name}")
+    await channel.send(f"Channel Check: id is {str(int(os.getenv('WEEKLY_MESSAGE_CHANNEL_ID')))} loc at {channel2.jump_url}, and name is {channel2.name}")
     msg1.start()
 
 @tasks.loop(hours=168)
