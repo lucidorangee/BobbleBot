@@ -35,7 +35,8 @@ drive = GoogleDrive(gauth)
 async def on_ready():
     print(f'We have logged in as {client.user}')
     channel = client.get_channel(350530297944735747)
-    await channel.send("Channel Check")
+    channel2 = client.get_channel(int(os.getenv('WEEKLY_MESSAGE_CHANNEL_ID')))
+    await channel.send(f"Channel Check: loc at {channel2.jump_url}, and name is {channel2.name}")
     msg1.start()
 
 @tasks.loop(hours=168)
