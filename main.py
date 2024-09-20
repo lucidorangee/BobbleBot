@@ -46,7 +46,7 @@ async def msg1():
 @msg1.before_loop
 async def before_msg1():
     for _ in range( (60*60*24*7) // 30):  # loop
-        if datetime.today().weekday() == 4 and datetime.now(timezone.utc).hour == 9+12 and datetime.now(timezone.utc).minute == 44:  # 24 hour format
+        if datetime.today().weekday() == 3 and datetime.now(timezone.utc).hour == 9+12 and datetime.now(timezone.utc).minute == 44:  # 24 hour format
             print('It is time')
             return
         await asyncio.sleep(30)
