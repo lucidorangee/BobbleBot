@@ -34,14 +34,14 @@ drive = GoogleDrive(gauth)
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
-    channel = await client.fetch_channel('1197804901082877994')
+    channel = await client.get_channel('1197804901082877994')
     await channel.send("Channel Check")
     msg1.start()
 
 @tasks.loop(hours=168)
 async def msg1():
     channel_id = int(os.getenv('WEEKLY_MESSAGE_CHANNEL_ID'))
-    channel = await client.fetch_channel(channel_id)
+    channel = await client.get_channel(channel_id)
     message = await channel.send("Weekly Bubble!")
     await showPhoto(message)
 
