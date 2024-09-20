@@ -34,7 +34,7 @@ drive = GoogleDrive(gauth)
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
-    channel = await client.get_channel('1197804901082877994')
+    channel = await client.get_channel(1197804901082877994)
     await channel.send("Channel Check")
     msg1.start()
 
