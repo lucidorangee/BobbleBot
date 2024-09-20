@@ -34,9 +34,6 @@ drive = GoogleDrive(gauth)
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
-    channel = client.get_channel(350530297944735747)
-    channel2 = client.get_channel(int(os.getenv('WEEKLY_MESSAGE_CHANNEL_ID')))
-    await channel.send(f"Channel Check: id is {str(int(os.getenv('WEEKLY_MESSAGE_CHANNEL_ID')))} loc at {channel2.jump_url}, and name is {channel2.name}")
     msg1.start()
 
 @tasks.loop(hours=168)
@@ -49,7 +46,7 @@ async def msg1():
 @msg1.before_loop
 async def before_msg1():
     for _ in range( (60*60*24*7) // 30):  # loop
-        if datetime.today().weekday() == 3 and datetime.now(timezone.utc).hour == 9+12 and datetime.now(timezone.utc).minute == 44:  # 24 hour format
+        if datetime.today().weekday() == 4 and datetime.now(timezone.utc).hour == 9+12 and datetime.now(timezone.utc).minute == 44:  # 24 hour format
             print('It is time')
             return
         await asyncio.sleep(30)
